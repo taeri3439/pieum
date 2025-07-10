@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//MyBatis//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="pieum.capsule.mapper.TimeCapsuleMapper">
+
+    <select id="getCapsuleId" resultType="String">
+        SELECT TC_SEQ.NEXTVAL FROM dual
+    </select>
+
+    <insert id="insertCapsule" parameterType="pieum.capsule.model.TimeCapsuleDTO">
+        INSERT INTO TIMECAPSULE (tcno, opendate, tctitle, tccontent,gno,mno)
+        VALUES (#{tcno},#{openDate}, #{tcTitle}, #{tcContent},#{gno},#{mno})
+    </insert>
+
+    <insert id="insertTag" parameterType="java.util.Map">
+        INSERT INTO TTC_MAPPING(tno,tcno)
+        VALUES (#{tno}, #{tcno})
+    </insert>
+
+	<select id='getTagId' resultType="String">
+		SELECT tno FROM TAG
+		WHERE tname = #{tname}
+	</select>
+	
+    <insert id="insertFile" parameterType="pieum.capsule.model.FileDTO">
+        INSERT INTO FILES (fno,filename, filedata, tcno)
+        VALUES (FILE_SEQ.NEXTVAL, #{fileName}, #{fileData, jdbcType=BLOB}, #{tcno})
+    </insert>
+    
+    <!-- 그룹 번호로 캡슐 조회 -->
+	<select id="selectCapsulesByGno" resultType="pieum.capsule.model.TimeCapsuleDTO">
+	    SELECT * FROM TIMECAPSULE WHERE gno = #{gno}
+	</select>
+	
+	<!-- 캡슐 번호로 파일 조회 -->
+	<select id="selectFileByTcno" resultType="pieum.capsule.model.FileDTO">
+	    SELECT * FROM FILES WHERE tcno = #{tcno}
+	</select>
+	
+	<!-- 타임캡슐번호로 태그 조회 -->
+	<select id="selectTagByTcno" resultType="pieum.capsule.model.TagDTO">
+		SELECT T.TNO, T.TNAME FROM TAG T
+		JOIN TTC_MAPPING M ON T.TNO = M.TNO
+		WHERE M.TCNO = #{tcno}
+	</select>
+	
+	<!-- 타임캡슐번호로 캡슐 조회 -->
+	<select id="selectCapsuleByTcno" resultType="pieum.capsule.model.TimeCapsuleDTO">
+		SELECT * FROM TIMECAPSULE
+		WHERE tcno = #{tcno}
+	</select>
+	
+	
+	<!-- 파일아이디로 파일 조회 -->
+	<select id="selectFileById" parameterType="String" resultType="pieum.capsule.model.FileDTO">
+    SELECT fno, fileName, fileData
+    FROM FILES
+    WHERE fno = #{fno}
+</select>
+</mapper>
